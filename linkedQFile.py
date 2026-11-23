@@ -1,12 +1,7 @@
-#Node object
-class Node:
-    #Node attributes
-    def __init__(self, value = None):
-        self.value = str(value)
-        self.next = None
-
-    def __str__(self):
-        return f"Value: {self.value}, Next: {self.next}"
+class Node():
+    def __init__(self, word, amount):
+        self.word = word
+        self.amount = 0
 
 class LinkedQ:
     def __init__(self):
