@@ -35,21 +35,22 @@ def createWordNode(word, words):
     except KeyError:
         words.store(word, Word(word))
 
-def createWordPairNode(word, nextWord, wordPairs):
+def createWordPairNode(word, nextWord, wordPairs, hashTableKeys):
     try:
         wordPairNode = wordPairs.search(word + nextWord)
         wordPairNode.amount += 1
     except KeyError:
         wordPairs.store(word+nextWord, WordPair(word, nextWord))
         wordPairNode = wordPairs.search(word+nextWord)
+        hashTableKeys.enqueue(word + nextWord)
 
 def createWordTables(wordQueue, hashTableSize):
     words = Hashtable(hashTableSize)
     wordPairs = Hashtable(hashTableSize)
-    wordPairsLinkedQ = LinkedQ()
+    hashTableKeys = LinkedQ()
 
     while wordQueue.isEmpty() == False:
-        word = wordQueue.dequeue().value
+        word = wordQueue.dequeue()
         try:
             createWordNode(word, words)
         except:
@@ -59,9 +60,19 @@ def createWordTables(wordQueue, hashTableSize):
         if wordQueue.peek() == False:
             break
             
-        createWordPairNode(word, wordQueue.peek(), wordPairs)
+        createWordPairNode(word, wordQueue.peek(), wordPairs, hashTableKeys)
 
-    return words
+    return words, wordPairs, hashTableKeys
+
+def calculateWordPairChance(words, wordPairs, hashTableKeys):
+    while hashTableKeys.isEmpty() == False:
+        wordPairsKey = hashTableKeys.dequeue()
+        wordPair = wordPairs.search(wordPairsKey)
+        if wordPair.amount > 1:
+            word = words.search(wordPair.firstWord)
+            wordPair.setChance(word.amount)
+            print(wordPair.chance)
+
 """
 def beemSearch(firstWord):
     q.enqueue(firstWord)
@@ -98,8 +109,8 @@ def main():
     #q = LinkedQ()
     #firstWord = ParentNode()
     wordQueue, hashTableSize = getWordQueue()
-    words = createWordTables(wordQueue, int(hashTableSize))
-    print(words)
+    words, wordPairs, hashTableKeys = createWordTables(wordQueue, int(hashTableSize))
+    calculateWordPairChance(words, wordPairs, hashTableKeys)
 
 
 main()

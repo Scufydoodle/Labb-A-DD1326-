@@ -40,7 +40,7 @@ class LinkedQ:
     #Removes the first element in queue and returns it
     def dequeue(self):
         #current second node in the queue
-        returnValue = self.__first
+        returnValue = self.__first.value
         #new first nodes is the old second node in queue
         self.__first = self.__first.next
         return returnValue
