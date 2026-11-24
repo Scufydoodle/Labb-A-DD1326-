@@ -57,4 +57,7 @@ class LinkedQ:
 
     #Gets the first element in the linkedQ without removing it
     def peek(self):
-        return self.__first.value
+        try:
+            return self.__first.value
+        except:
+            return False

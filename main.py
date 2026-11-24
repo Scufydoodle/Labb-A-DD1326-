@@ -1,3 +1,4 @@
+import string
 from linkedQFile import LinkedQ
 from hashtable import Hashtable
 from word import Word
@@ -11,43 +12,56 @@ class ParentNode:
         
     def __str__(self):
         return self.word
-
+    
 def getWordQueue():
     wordQueue = LinkedQ()
     hashTableSize = 0
     with open("acd_alla.txt", encoding="utf-8") as storiesText:
         for row in storiesText:
             for word in row.split():
-                if word.isalpha():
+                #Fixar så att ordet inte kan bestå av citat tecken, punkt och komma
+                translator = str.maketrans('', '', string.punctuation)
+                fixedWord = word.translate(translator)
+                if fixedWord.isalpha():
                     hashTableSize += 1
-                    wordQueue.enqueue(word)
+                    wordQueue.enqueue(fixedWord)
     return wordQueue, hashTableSize
 
-def createWordPair(wordQueue):
-    words = Hashtable()
-    wordPairs = Hashtable()
+
+def createWordNode(word, words):
+    try:
+        wordNode = words.search(word)
+        wordNode.amount += 1
+    except KeyError:
+        words.store(word, Word(word))
+
+def createWordPairNode(word, nextWord, wordPairs):
+    try:
+        wordPairNode = wordPairs.search(word + nextWord)
+        wordPairNode.amount += 1
+    except KeyError:
+        wordPairs.store(word+nextWord, WordPair(word, nextWord))
+        wordPairNode = wordPairs.search(word+nextWord)
+
+def createWordTables(wordQueue, hashTableSize):
+    words = Hashtable(hashTableSize)
+    wordPairs = Hashtable(hashTableSize)
     wordPairsLinkedQ = LinkedQ()
+
     while wordQueue.isEmpty() == False:
         word = wordQueue.dequeue().value
-        nextWord = wordQueue.peek()
-        if words.search(word) != None:
-            wordNode = words.search(word)
-            wordNode.amount += 1
-        else:
-            words.store(word, Word(word))
+        try:
+            createWordNode(word, words)
+        except:
             continue
 
-        if wordQueue.peek() != None:
-            if wordPairs.search(word + nextWord) != None:
-                wordPairNode = wordPairs.search(word + nextWord)
-                wordPairNode.amount += 1
-                wordPairsLinkedQ.enqueue(wordPairNode)
-            else:
-                wordPairs.store(word+nextWord, WordPair(word, nextWord))
-    return words, wordPairs
+        #Kollar om peek ens går, annars finns inte ett till ord och därför ordpar med just den.
+        if wordQueue.peek() == False:
+            break
             
+        createWordPairNode(word, wordQueue.peek(), wordPairs)
 
-
+    return words
 """
 def beemSearch(firstWord):
     q.enqueue(firstWord)
@@ -84,6 +98,8 @@ def main():
     #q = LinkedQ()
     #firstWord = ParentNode()
     wordQueue, hashTableSize = getWordQueue()
-    words, wordPairs = createWordPair(wordQueue, hashTableSize)
+    words = createWordTables(wordQueue, int(hashTableSize))
+    print(words)
+
 
 main()
