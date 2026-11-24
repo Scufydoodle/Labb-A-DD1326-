@@ -1,4 +1,4 @@
 class Word():
-    def __init__(self, word, amount):
-        self.word = word
+    def __init__ (self, word):
+        self.value = word
         self.amount = 0

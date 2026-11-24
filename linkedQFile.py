@@ -1,7 +1,7 @@
 class Node():
-    def __init__(self, word, amount):
-        self.word = word
-        self.amount = 0
+    def __init__(self, value):
+        self.value = value
+        self.next = None
 
 class LinkedQ:
     def __init__(self):
@@ -40,7 +40,7 @@ class LinkedQ:
     #Removes the first element in queue and returns it
     def dequeue(self):
         #current second node in the queue
-        returnValue = self.__first.value
+        returnValue = self.__first
         #new first nodes is the old second node in queue
         self.__first = self.__first.next
         return returnValue
@@ -54,3 +54,7 @@ class LinkedQ:
     def queueLinkedQ(self, list):
         for element in list:
             self.enqueue(element)
+
+    #Gets the first element in the linkedQ without removing it
+    def peek(self):
+        return self.__first.value

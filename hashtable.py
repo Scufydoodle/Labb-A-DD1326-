@@ -3,14 +3,14 @@ class HashNode:
       """key är nyckeln som anvands vid hashningen
          data är det objekt som ska hashas in"""
       self.key = key
-      self.data = str(data)
+      self.data = data
 
 #Fyll i kod här nedan för att initiera hashtabellen
 
 class Hashtable:
    def __init__(self, size):
       """size: hashtabellens storlek"""
-      self.size = size#Amount of data
+      self.size = size #Amount of data
       self.slots = [None] * self.size*2#Two times more slots than amount of data
 
    def store(self, key, data):
@@ -21,7 +21,7 @@ class Hashtable:
       while self.slots[hashedKey] != None:
 
          if self.slots[hashedKey].key == key:
-            self.slots[hashedKey] = HashNode(key, str(data))
+            self.slots[hashedKey] = HashNode(key, data)
             break
 
          if self.size == counter:
@@ -31,7 +31,7 @@ class Hashtable:
          hashedKey += 1
          hashedKey = hashedKey%(len(self.slots))
          counter += 1
-      self.slots[hashedKey] = HashNode(key, str(data))
+      self.slots[hashedKey] = HashNode(key, data)
       return True
    
    def search(self, key):

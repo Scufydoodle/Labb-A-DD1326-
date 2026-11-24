@@ -1,4 +1,8 @@
-from linkedQFile import Node, LinkedQ
+from linkedQFile import LinkedQ
+from hashtable import Hashtable
+from word import Word
+from wordPair import WordPair
+from maxHeap import MaxHeap
 
 class ParentNode:
     def __init__(self, word, parent = None):
@@ -10,10 +14,39 @@ class ParentNode:
 
 def getWordQueue():
     wordQueue = LinkedQ()
+    hashTableSize = 0
     with open("acd_alla.txt", encoding="utf-8") as storiesText:
         for row in storiesText:
             for word in row.split():
-                wordQueue.enqueue(word)
+                if word.isalpha():
+                    hashTableSize += 1
+                    wordQueue.enqueue(word)
+    return wordQueue, hashTableSize
+
+def createWordPair(wordQueue):
+    words = Hashtable()
+    wordPairs = Hashtable()
+    wordPairsLinkedQ = LinkedQ()
+    while wordQueue.isEmpty() == False:
+        word = wordQueue.dequeue().value
+        nextWord = wordQueue.peek()
+        if words.search(word) != None:
+            wordNode = words.search(word)
+            wordNode.amount += 1
+        else:
+            words.store(word, Word(word))
+            continue
+
+        if wordQueue.peek() != None:
+            if wordPairs.search(word + nextWord) != None:
+                wordPairNode = wordPairs.search(word + nextWord)
+                wordPairNode.amount += 1
+                wordPairsLinkedQ.enqueue(wordPairNode)
+            else:
+                wordPairs.store(word+nextWord, WordPair(word, nextWord))
+    return words, wordPairs
+            
+
 
 """
 def beemSearch(firstWord):
@@ -50,6 +83,7 @@ def makeChildren(startNode, endWord, wordList, oldList, q):
 def main():
     #q = LinkedQ()
     #firstWord = ParentNode()
-    getWordQueue()
+    wordQueue, hashTableSize = getWordQueue()
+    words, wordPairs = createWordPair(wordQueue, hashTableSize)
 
 main()
