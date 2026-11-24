@@ -18,7 +18,7 @@ def getWordQueue():
     hashTableSize = 0
     with open("acd_alla.txt", encoding="utf-8") as storiesText:
         for row in storiesText:
-            for word in row.split():
+            for word in row.strip().split():
                 #Fixar så att ordet inte kan bestå av citat tecken, punkt och komma
                 translator = str.maketrans('', '', string.punctuation)
                 fixedWord = word.translate(translator)
@@ -30,20 +30,21 @@ def getWordQueue():
 
 def createWordNode(word, words):
     try:
-        wordNode = words.search(word)
+        wordNode = words.search(word.lower())
         wordNode.amount += 1
     except KeyError:
-        words.store(word, Word(word))
+        words.store(word.lower(), Word(word.lower()))
 
 def createWordPairNode(word, nextWord, wordPairs, hashTableKeys):
     try:
-        wordPairNode = wordPairs.search(word + nextWord)
+        wordPairNode = wordPairs.search((word + nextWord).lower())
         wordPairNode.amount += 1
     except KeyError:
-        wordPairs.store(word+nextWord, WordPair(word, nextWord))
-        wordPairNode = wordPairs.search(word+nextWord)
+        wordPairs.store((word+nextWord).lower(), WordPair(word.lower(), nextWord.lower()))
+        wordPairNode = wordPairs.search((word+nextWord).lower())
         hashTableKeys.enqueue(word + nextWord)
 
+#Creates all wordPairs and words
 def createWordTables(wordQueue, hashTableSize):
     words = Hashtable(hashTableSize)
     wordPairs = Hashtable(hashTableSize)
@@ -51,6 +52,8 @@ def createWordTables(wordQueue, hashTableSize):
 
     while wordQueue.isEmpty() == False:
         word = wordQueue.dequeue()
+        #If error is thrown that means that a word doesn't already exist meaning the wordpair shouldn't exists
+        #Therefor we go to next itteration of the loop with continue
         try:
             createWordNode(word, words)
         except:
@@ -61,17 +64,16 @@ def createWordTables(wordQueue, hashTableSize):
             break
             
         createWordPairNode(word, wordQueue.peek(), wordPairs, hashTableKeys)
-
     return words, wordPairs, hashTableKeys
 
+#Calculates the possibility for a word to be followed by another word in the text
 def calculateWordPairChance(words, wordPairs, hashTableKeys):
     while hashTableKeys.isEmpty() == False:
         wordPairsKey = hashTableKeys.dequeue()
-        wordPair = wordPairs.search(wordPairsKey)
+        wordPair = wordPairs.search(wordPairsKey.lower())
         if wordPair.amount > 1:
             word = words.search(wordPair.firstWord)
             wordPair.setChance(word.amount)
-            print(wordPair.chance)
 
 """
 def beemSearch(firstWord):

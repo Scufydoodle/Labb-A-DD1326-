@@ -2,7 +2,7 @@ class WordPair():
     def __init__ (self, firstWord, secondWord):
         self.firstWord = firstWord
         self.secondWord = secondWord
-        self.amount = 0
+        self.amount = 1
         self.chance = None
 
     def __str__(self):
@@ -10,4 +10,4 @@ class WordPair():
 
     #Calculates the chance of the word pair being in the text
     def setChance(self, firstWordAmount):
-        self.chance = self.amount * firstWordAmount
+        self.chance = self.amount / firstWordAmount
